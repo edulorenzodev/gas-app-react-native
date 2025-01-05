@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import MapView, { Region } from "react-native-maps";
 
 import * as Location from "expo-location";
-import useData from "hooks/use-data";
+import useNotionData from "hooks/use-notion-data";
 
 export default function App() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -15,7 +15,7 @@ export default function App() {
 
   const mapRef = useRef<MapView>(null); // Referencia al MapView
 
-  const { data } = useData();
+  const { data, loading } = useNotionData("97207");
 
   function convertToRegion(location: Location.LocationObject): Region {
     return {
@@ -40,8 +40,7 @@ export default function App() {
 
     getCurrentLocation();
     if (location) setRegion(convertToRegion(location));
-    console.log(data);
-  }, [data]);
+  }, []);
 
   useEffect(() => {
     if (location) {
@@ -77,6 +76,13 @@ export default function App() {
               color="black"
               onPress={handleCenterMap}
             />
+            {loading &&
+              data &&
+              data.map((item) => (
+                <Text key={item.id}>
+                  {item.properties.name.title[0].plain_text}
+                </Text>
+              ))}
           </View>
         </>
       ) : (
